@@ -1,0 +1,3 @@
+[submodule "backend-InsightHub"]
+	path = backend-InsightHub
+	url = https://github.com/Daivison-Morais/Clone-chatGPT
