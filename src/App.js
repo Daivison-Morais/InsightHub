@@ -1,23 +1,58 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './styles/App.css';
+import './styles/reset.css'
+import { makeRequest } from './api/api';
+import { SideMenu } from './components/sideMenu/SideMenu';
+import { ChatMessage } from './components/chatMessage/ChatMessage';
 
 function App() {
+
+  const [input, setInput] = useState("");
+  const [chatLog, setChatLog] = useState([{
+    user: "gpt",
+    message: "Como posso te ajudar hoje?",
+  }]);
+
+  async function handleSubmit(e){
+    e.preventDefault();
+
+    let response = await makeRequest({prompt: input})
+
+    console.log("RESPONSE: ", response);
+
+    response = response.data.split('\n').map(line => <p>{line}</p>)
+
+    setChatLog([...chatLog, {
+      user:"me",
+      message: `${input}`
+    },
+  {
+    user:'gpt',
+    message: response
+  }])
+
+  setInput('');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SideMenu></SideMenu>
+      <section className='chatbox'>
+        <div className='chat-log'>
+            {chatLog.map((message, index)=> <ChatMessage key={index} message={message}/>)}
+        </div >
+        <div className='chat-input-holder'>
+            <form onSubmit={handleSubmit}>
+              <input 
+              rows='1'
+              className='chat-input-textarea'
+              value={input}
+              onChange={e => setInput(e.target.value)}>
+
+              </input>
+            </form>
+        </div>
+      </section>
     </div>
   );
 }
